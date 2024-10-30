@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <!--<link rel="stylesheet" href="{% static 'style.css' %}">
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>-->
+    </head>
+    <body>
+        <h1>記事投稿ページ</h1>
+<!--<p>You can submit articles from the following form.</p>-->
+    <form action="{% url 'home' %}" method="post">
+      {% csrf_token %}
+      <div>
+        <label for="titleInput">Title</label>
+        <input id="titleInput" name="title" type="text" placeholder="Input title">
+      </div>
+      <div>
+        <label for="textInput">Text</label>
+        <textarea id="textInput" name="text" rows="3"></textarea>
+      </div>
+      <div>
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+    <a href="{% url 'home' %}">トップページ</a>
+    <!--{% load static %}
+    <script type="text/javascript" src="{% static 'js/jquery-3.5.1.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.bundle.js' %}" ></script>-->
+
+  </body>
+</html>

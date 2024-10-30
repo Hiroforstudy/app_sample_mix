@@ -1,0 +1,44 @@
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>ログイン</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+  </head>
+  <body>
+    <div class="login-container">
+      <h1>ログイン</h1>
+      {% if form.errors %}
+      <p class="error">ユーザー名とパスワードが一致しません。もう一度お試しください。</p>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="ログイン" class="submit-btn">
+      </form>
+
+      <p><a href="{% url 'home' %}">ホームページに戻る</a></p>
+    </div>
+  </body>
+</html>
+<!--
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <h1>ログイン</h1>
+{% if form.errors %}
+<p>ユーザー名とパスワードが一致しません。もう一度お試しください。</p>
+{% endif %}
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Login" />
+    </form>
+
+    <p><a href="{% url 'home' %}">ホームページに戻る</a></p>
+  </body>
+</html>
+-->

@@ -1,0 +1,27 @@
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>Public Content</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/public.css' %}">
+  </head>
+  <body>
+    <header>
+      <h1>Public Content</h1>
+    </header>
+    <section class="content">
+      <p>ここでは誰でもアクセスできる公開コンテンツを提供しています。</p>
+      <p>次のリンクを利用して、自由に閲覧してください。</p>
+
+      <div class="links">
+        <a href="#article1">記事1: 公開情報の概要</a>
+        <a href="#article2">記事2: みんなに知ってもらいたい事実</a>
+        <a href="{% url 'home' %}">ホームに戻る</a>
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2024 Public Content. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

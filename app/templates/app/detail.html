@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <h1>記事詳細ページ</h1>
+    <h2>タイトル</h2>
+    <p>{{ article.title }}</p>
+    <h2>投稿日時</h2>
+    <small>{{ article.posted_at }}</small>
+    <h2>本文</h2>
+    <div>
+        {{ article.body | linebreaksbr }}
+        <hr>
+        <h2>コメント</h2>
+
+        <form action="{% url 'detail' article.id %}" method="post">
+          {% csrf_token %}
+          <div>
+            <label for="textInput">文章</label>
+            <textarea id="textInput" name="text" rows="3"></textarea>
+          </div>
+          <div>
+            <button type="submit">投稿</button>
+          </div>
+        </form>
+        {% if comments %}
+        {% for comment in comments %}
+        <div>
+          <div>
+            <small>[{{ comment.posted_at }}]</small>
+          </div>
+          <div>
+            {{ comment.text | linebreaksbr }}
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No comment.</p>
+        {% endif %}
+    </div>
+
+    <p><a href="{% url 'update' article.id %}">記事の編集</a></p>
+    <p><a href="{% url 'home' %}">トップページ</a></p>
+    <form action="{% url 'delete' article.id %}" method="post">
+      {% csrf_token %}
+      <button type="submit">記事を削除</button>
+    </form>
+
+  </body>
+</html>

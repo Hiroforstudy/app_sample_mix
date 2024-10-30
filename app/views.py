@@ -1,0 +1,141 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.utils import timezone
+from django.http import Http404, JsonResponse
+from django.contrib.auth import login
+from django.core.paginator import Paginator
+from .forms import SignUpForm
+from app.models import Article, Comment
+
+# Create your views here.
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')  # ユーザー登録後にリダイレクトするページ
+    else:
+        form = SignUpForm()
+    return render(request, 'app/signup.html', {'form': form})
+
+def home(request):
+    if request.method == 'POST':
+        article = Article(title=request.POST['title'],
+                          body=request.POST['text'],
+                          author=request.user
+                          )
+        article.save()
+
+    sort = request.GET.get('sort')  # 'sort' パラメータを取得 ソート機能
+    if sort == 'asc':
+        articles = Article.objects.order_by('posted_at')
+    else:
+        articles = Article.objects.order_by('-posted_at')
+
+       # ページネーション処理
+    paginator = Paginator(articles, 5)  # 1ページに5件の記事を表示
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj
+    }             
+        
+    #context = {
+        #'articles':articles
+    #}
+
+    return render(request, 'app/home.html', context)
+
+
+def public_page(request):
+    return render(request, 'app/public.html', {})
+
+@login_required
+def create_page(request):
+    return render(request, 'app/create.html', {})
+
+def like(request, article_id):
+    try:
+        article = Article.objects.get(pk=article_id)
+        article.like += 1
+        article.save()
+
+    except Article.DoesNotExist:
+        raise Http404("Article does not exist")
+    
+    return redirect(detail, article_id)    
+
+def api_like(request, article_id): #api
+    try:
+        article = Article.objects.get(pk=article_id)
+        article.like += 1
+        article.save()
+    except Article.DoesNotExist:
+        raise Http404("Article does not exist")
+    result = {
+        'id': article_id,
+        'like': article.like,
+    }
+    return JsonResponse(result)    
+
+#@login_required
+def detail(request, article_id):
+    try:
+        article = Article.objects.get(pk=article_id)
+    except Article.DoesNotExist:
+        raise Http404("Article does not exist")
+
+    if request.method == 'POST':
+        comment = Comment(article=article, text=request.POST['text'])
+        comment.save()
+
+    context = {
+        'article': article,
+        'comments': article.comments.order_by('-posted_at'),
+    }
+    return render(request, "app/detail.html", context)
+
+@login_required
+def update(request, article_id):
+    try:
+        article = Article.objects.get(pk=article_id)
+    except Article.DoesNotExist:
+        raise Http404("Article does not exist")
+    if request.method == 'POST':
+        article.title = request.POST['title']
+        article.body = request.POST['text']
+        article.save()
+        return redirect(detail, article_id)
+    context = {
+        'article': article
+    }    
+    return render(request, "app/edit.html", context)
+
+@login_required
+def delete(request, article_id):
+    try:
+        article = Article.objects.get(pk=article_id)
+    except Article.DoesNotExist:
+        raise Http404("Article does not exist")
+
+    #article.delete()
+
+    # POSTリクエストか確認
+    if request.method == 'POST':
+        article.delete()
+
+    return redirect(home)
+
+def create(request):
+    return render(request, "app/create.html")
+
+'''
+@login_required
+def private_page(request):
+    return render(request, 'app/private.html', {})
+'''
+

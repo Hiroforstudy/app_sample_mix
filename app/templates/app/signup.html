@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ユーザ登録画面</title>
+</head>
+<body>
+<h2>ユーザ登録画面</h2>
+<form method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">新規登録</button>
+</form>
+<br>
+<a href="{% url 'home' %}">トップページ</a>
+</body>
+</html>

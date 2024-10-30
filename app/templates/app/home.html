@@ -1,0 +1,73 @@
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>ホームページ</title>
+    {% load static %}
+    <!--<link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">-->
+    <script type="text/javascript" src="{% static 'js/home.js' %}" ></script>
+  </head>
+  <body>
+    <h1>記事一覧ページ</h1>
+    <p><a href="{% url 'pub' %}">誰でも見れるコンテンツ</a></p>
+    {% if user.is_authenticated %}
+    <p>こんにちは {{ user.username }} さん</p>
+    
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit">ログアウト</button>
+    </form>
+    {% else %}
+    <p><a href="{% url 'login' %}">ログイン</a></p>
+    <p><a href="{% url 'signup' %}">サインアップ</a></p>
+    {% endif %}
+    <a href="{% url 'create' %}">記事投稿ページ(create.html)</a>
+    <hr>
+    <p><a href="{% url 'home' %}?sort=asc">Sort by date</a></p>
+    {% if page_obj %}
+    {% for article in page_obj %}
+      <a href="{% url 'detail' article.id %}">{{ article.title }}</a>
+
+      <small>
+        [投稿者: {{ article.author.username }}]
+      </small>
+      <small>
+        [{{ article.posted_at }}]
+      </small>
+      <div>
+        {{ article.body | linebreaksbr }}
+      </div>
+      <div>
+        <a onclick="like('{{article.id}}');">
+          <i>いいね</i>
+          <span id="like{{article.id}}">{{ article.like }}</span>
+        </a>
+      </div>
+
+    {% empty %}
+      <p>No article</p>
+    {% endfor %}
+  {% else %}
+    <p>No page object found</p>  
+  {% endif %}
+  <hr>
+    <!-- ページネーションリンク -->
+    <div class="pagination">
+      <span class="step-links">
+          {% if page_obj.has_previous %}
+              <a href="?page=1">&laquo; 最初</a>
+              <a href="?page={{ page_obj.previous_page_number }}">前</a>
+          {% endif %}
+
+          <span class="current">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+          </span>
+
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">次</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}">最後 &raquo;</a>
+          {% endif %}
+      </span>
+    </div>    
+    
+</body>
+</html>

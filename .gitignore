@@ -1,0 +1,19 @@
+# Python関連
+*.pyc
+__pycache__/
+
+# Django関連
+*.sqlite3
+/db.sqlite3
+/staticfiles/
+/media/
+/.env
+*.log
+
+# IDE関連
+.vscode/
+.idea/
+
+# OS関連
+.DS_Store
+Thumbs.db

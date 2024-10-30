@@ -1,0 +1,30 @@
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    {% load static %}
+    <title>Private Content</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/private.css' %}">
+  </head>
+  <body>
+    <header>
+      <h1>Private Content</h1>
+    </header>
+
+    <section class="content">
+      <p>このページは厳重に管理された、特定のユーザーのみが閲覧できるコンテンツです。</p>
+      <p>ここでは、重要なデータや特別な情報が提供されています。</p>
+
+      <div class="private-details">
+        <p>🔒 特別なプロジェクトの計画書</p>
+        <p>🔒 高度な技術情報</p>
+        <p>🔒 会社の機密データ</p>
+      </div>
+
+      <a href="{% url 'home' %}">ホームに戻る</a>
+    </section>
+
+    <footer>
+      <p>© 2024 Private Content. Strictly confidential.</p>
+    </footer>
+  </body>
+</html>
