@@ -18,10 +18,51 @@ def signup(request):
             user = form.save()
             login(request, user)
             return redirect('home')  # ユーザー登録後にリダイレクトするページ
+        else:
+            print("フォームエラー", form.errors) # バリエーションエラーがあればエラーメッセージを出力（テスト用）
     else:
         form = SignUpForm()
     return render(request, 'app/signup.html', {'form': form})
 
+@login_required  # 投稿にはログインが必要と仮定
+def home(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        body = request.POST.get('text')
+        
+        if not title or not body:  # 必須データがない場合
+            return HttpResponse("タイトルと本文は必須です。", status=400)
+
+        try:
+            with transaction.atomic():
+                article = Article(
+                    title=title,
+                    body=body,
+                    author=request.user
+                )
+                article.save()
+        except Exception as e:
+            return HttpResponse("記事の保存中にエラーが発生しました: " + str(e), status=500)
+
+    # ソート処理
+    sort = request.GET.get('sort')  # 'sort' パラメータを取得
+    if sort == 'asc':
+        articles = Article.objects.order_by('posted_at')
+    else:
+        articles = Article.objects.order_by('-posted_at')
+
+    # ページネーション処理
+    paginator = Paginator(articles, 5)  # 1ページに5件の記事を表示
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj
+    }
+
+    return render(request, 'app/home.html', context)
+
+'''
 def home(request):
     if request.method == 'POST':
         try:
@@ -58,6 +99,8 @@ def home(request):
     #}
 
     return render(request, 'app/home.html', context)
+'''
+
 ''' トランザクション機能実装前
 def home(request):
     if request.method == 'POST':
@@ -255,9 +298,10 @@ def delete(request, article_id):
 
     return redirect(home)
 '''
+'''
 def create(request):
     return render(request, "app/create.html")
-
+'''
 '''
 @login_required
 def private_page(request):
