@@ -41,6 +41,7 @@ def home(request):
                     author=request.user
                 )
                 article.save()
+            return redirect('home') #成功時にhomeページにリダイレクト    
         except Exception as e:
             return HttpResponse("記事の保存中にエラーが発生しました: " + str(e), status=500)
 
