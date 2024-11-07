@@ -24,27 +24,7 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'app/signup.html', {'form': form})
 
-@login_required  # 投稿にはログインが必要と仮定
 def home(request):
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        body = request.POST.get('text')
-        
-        if not title or not body:  # 必須データがない場合
-            return HttpResponse("タイトルと本文は必須です。", status=400)
-
-        try:
-            with transaction.atomic():
-                article = Article(
-                    title=title,
-                    body=body,
-                    author=request.user
-                )
-                article.save()
-            return redirect('home') #成功時にhomeページにリダイレクト    
-        except Exception as e:
-            return HttpResponse("記事の保存中にエラーが発生しました: " + str(e), status=500)
-
     # ソート処理
     sort = request.GET.get('sort')  # 'sort' パラメータを取得
     if sort == 'asc':
@@ -60,9 +40,8 @@ def home(request):
     context = {
         'page_obj': page_obj
     }
-
+    
     return render(request, 'app/home.html', context)
-
 '''
 def home(request):
     if request.method == 'POST':
@@ -139,6 +118,26 @@ def public_page(request):
 
 @login_required
 def create_page(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        body = request.POST.get('text')
+
+        if not title or not body:
+            return HttpResponse("タイトルと本文は必須です。", status=400)
+
+        try:
+            with transaction.atomic():
+                article = Article(
+                    title=title,
+                    body=body,
+                    author=request.user
+                )
+                article.save()
+            return redirect('home')  # 投稿成功時には一覧ページにリダイレクト
+        except Exception as e:
+            return HttpResponse("記事の保存中にエラーが発生しました: " + str(e), status=500)
+
+    # POSTでない場合はフォームページを表示
     return render(request, 'app/create.html', {})
 
 def like(request, article_id):
