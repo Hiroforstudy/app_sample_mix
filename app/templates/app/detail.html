@@ -45,10 +45,17 @@
 
     <p><a href="{% url 'update' article.id %}">記事の編集</a></p>
     <p><a href="{% url 'home' %}">トップページ</a></p>
-    <form action="{% url 'delete' article.id %}" method="post">
+    <form action="{% url 'delete' article.id %}" method="post" onsubmit="return confirmDelete();">
       {% csrf_token %}
       <button type="submit">記事を削除</button>
     </form>
+
+    <!-- JavaScriptによる確認ダイアログ -->
+    <script type="text/javascript">
+      function confirmDelete() {
+        return confirm("この記事を削除してもよろしいですか？この操作は元に戻せません。");
+      }
+    </script>
 
   </body>
 </html>
