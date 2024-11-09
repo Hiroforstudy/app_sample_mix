@@ -43,12 +43,16 @@
         {% endif %}
     </div>
 
-    <p><a href="{% url 'update' article.id %}">記事の編集</a></p>
+    <!-- 作成者のみが編集・削除リンクを表示 -->
+    {% if article.author == user %}
+
+      <p><a href="{% url 'update' article.id %}">記事の編集</a></p>
+      <form action="{% url 'delete' article.id %}" method="post" onsubmit="return confirmDelete();">
+        {% csrf_token %}
+        <button type="submit">記事を削除</button>
+      </form>
+    {% endif %}
     <p><a href="{% url 'home' %}">トップページ</a></p>
-    <form action="{% url 'delete' article.id %}" method="post" onsubmit="return confirmDelete();">
-      {% csrf_token %}
-      <button type="submit">記事を削除</button>
-    </form>
 
     <!-- JavaScriptによる確認ダイアログ -->
     <script type="text/javascript">
