@@ -9,6 +9,10 @@ from django.db import transaction # トランザクション
 from django.views.decorators.http import require_POST # api_like
 from .forms import SignUpForm
 from app.models import Article, Comment
+import logging
+from django.contrib import messages
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -188,6 +192,30 @@ def detail(request, article_id):
     }
     return render(request, "app/detail.html", context)
 '''
+
+@login_required
+def update(request, article_id):
+    try:
+        article = Article.objects.get(pk=article_id)
+    except Article.DoesNotExist:
+        messages.error(request, "記事が存在しません。")
+        return redirect('home')
+    
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():
+                article.title = request.POST['title']
+                article.body = request.POST['text']
+                article.save()
+            messages.success(request, "記事を更新しました。")
+            return redirect('detail', article_id=article_id)
+        except Exception as e:
+            logger.error("記事更新中にエラーが発生しました: %s", e)
+            messages.error(request, "記事の更新中にエラーが発生しました。")
+    context = {'article': article}
+    return render(request, "app/edit.html", context)
+
+'''2025/3/31
 @login_required
 def update(request, article_id):
     try:
@@ -206,6 +234,8 @@ def update(request, article_id):
     
     context = {'article': article}
     return render(request, "app/edit.html", context)
+'''
+
 '''トランザクション制御バージョン
 @login_required
 def update(request, article_id):
